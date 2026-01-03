@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarEra Dashboard</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        /* Styles pour la navigation et les filtres */
+        .nav-bar { background: #1a1a1a; padding: 10px; display: flex; gap: 10px; border-bottom: 2px solid #00bcd4; margin-bottom: 20px; }
+        .hidden { display: none !important; }
+        .nav-bar button.active { border-bottom: 2px solid white; color: white; }
+        
+        .analysis-control { background: #252525; padding: 20px; border-radius: 8px; border-left: 4px solid #ff9800; margin-bottom: 20px; }
+        .date-grid { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; margin-top: 15px; }
+        .date-quick-group { display: flex; gap: 5px; margin-top: 5px; }
+        .input-field label { font-size: 0.8em; color: #aaa; }
+        .info-db-date { font-size: 0.85em; color: #00bcd4; margin-bottom: 10px; display: block; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>WarEra Dashboard 📊</h1>
+        <div class="nav-bar">
+            <button id="btn-show-home" class="action-btn primary active">🏠 Outils & Sync</button>
+            <button id="btn-show-analysis" class="action-btn secondary">📈 Analyses Profondes</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="view-home">
+            <section id="database-section">
+                <h2>Historique & Base de Données</h2>
+                <div class="db-status-card" style="background: #333; padding: 15px; border-radius: 8px; border-left: 4px solid #00bcd4;">
+                    <div class="db-info">
+                        <p>👤 Nom : <strong id="db-name">-</strong></p>
+                        <p>📊 Transactions en base : <strong id="db-count">Chargement...</strong></p>
+                        <p>🕒 Dernière mise à jour : <strong id="db-last-sync">-</strong></p>
+                    </div>
+                    <div class="input-group">
+                        <button id="syncDbBtn" class="action-btn primary">🔄 Synchroniser l'historique</button>
+                    </div>
+                    <div id="sync-progress" class="status-message info" style="display:none; margin-top: 10px;"></div>
+                </div>
+            </section>
+
+            <hr>
+
+            <section id="user-info-section">
+                <h2>Configuration</h2>
+                <div class="input-group">
+                    <label for="myUserId">ID Utilisateur:</label>
+                    <input type="text" id="myUserId" placeholder="Ex: 693478bb...">
+                    <button id="fetchUserBtn" class="action-btn primary">Afficher Infos</button>
+                </div>
+                <div id="user-output"></div>
+            </section>
+
+            <hr>
+
+            <section id="companies-section">
+                <h2>Mes Compagnies</h2>
+                <div id="companies-output">
+                    <div class="status-message info">En attente des données...</div>
+                </div>
+            </section>
+
+            <hr>
+
+            <section id="factory-section">
+                <h2>Scanner d'Usines</h2>
+                <div class="input-group">
+                    <button id="analyzeFactoryBtn" class="action-btn secondary">Lancer le Scanner</button>
+                </div>
+                <div id="factory-status" class="status-message info">Scanner prêt.</div>
+                <div id="factory-output"></div>
+            </section>
+
+            <hr>
+
+            <section id="trading-section">
+                <h2>Trading Rapide (Deconseiller d'en abuser)</h2>
+                <div class="input-group">
+                    <button id="analyzeTradingBtn" class="action-btn secondary">Analyser Marchés</button>
+                </div>
+                <div id="trading-status" class="status-message info">En attente.</div>
+                <div id="trading-output"></div>
+            </section>
+        </div>
+
+        <div id="view-analysis" class="view-content hidden">
+            <section class="analysis-container">
+                <h2>Analyse des Revenus & Dépenses</h2>
+                
+                <div class="analysis-control">
+                    <div class="date-selection">
+                        <label>Période rapide :</label>
+                        <div class="date-quick-group">
+                            <button class="date-quick-btn action-btn secondary" data-days="1">1D</button>
+                            <button class="date-quick-btn action-btn secondary" data-days="7">7D</button>
+                            <button class="date-quick-btn action-btn secondary" data-days="30">30D</button>
+                            <button class="date-quick-btn action-btn secondary" data-days="60">60D</button>
+                            <button class="date-quick-btn action-btn secondary" data-days="all">ALL</button>
+                            <button class="date-quick-btn action-btn secondary" data-days="0">TODAY</button>
+                        </div>
+                        <span id="oldest-date-info" class="info-db-date">Chargement des dates disponibles...</span>
+                    </div>
+
+                    <div class="date-grid">
+                        <div class="input-field">
+                            <label>Du :</label><br>
+                            <input type="date" id="analysis-start-date">
+                        </div>
+                        <div class="input-field">
+                            <label>Au :</label><br>
+                            <input type="date" id="analysis-end-date">
+                        </div>
+                        <button id="btn-run-analysis" class="action-btn primary">🚀 Lancer l'analyse</button>
+                    </div>
+                </div>
+
+                <div id="analysis-global-summary"></div>
+
+                <div class="analysis-mode-selector">
+                    <button id="btn-mode-global" class="mode-btn active" data-mode="global">Analyse Globale</button>
+                    <button id="btn-mode-daily" class="mode-btn" data-mode="daily">Analyse par Jour</button>
+                </div>
+
+                <div id="analysis-results-area">
+                    <div class="status-message info">Configurez les dates pour lancer les calculs.</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 WarEra Tool</p>
+    </footer>
+
+    <!-- First-use modal (s'affiche une seule fois si la base est vide et aucun ID n'est sauvegardé) -->
+    <div id="first-use-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Bienvenue — Configuration initiale</h3>
+            <p>Pour commencer, entrez votre <strong>ID utilisateur</strong> qui sera utilisé pour remplir la base de données de vos transactions.</p>
+            <div class="input-group">
+                <input type="text" id="initialUserId" placeholder="Ex: 693478bb...">
+                <button id="saveInitialUserIdBtn" class="action-btn primary">Sauvegarder & Continuer</button>
+            </div>
+            <div id="first-use-error" class="status-message error" style="display:none; margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <script type="module" src="assets/main2.js"></script>
+</body>
+</html>
