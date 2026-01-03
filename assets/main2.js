@@ -922,31 +922,6 @@ btnRunAnalysis.addEventListener('click', () => {
     // Ici on appellera la future fonction de calcul de profits
 });
 
-syncDbBtn.addEventListener('click', async () => {
-    const userId = localStorage.getItem('targetUserId');
-    if (!userId) {
-        alert("Veuillez d'abord configurer un ID utilisateur cible.");
-        return;
-    }
-    syncProgressEl.classList.remove('hidden');
-    try {
-        await runFullSync(userId, (msg) => {
-            // Si l'élément #sync-text n'existe pas, on tombe sur #sync-progress
-            const el = document.getElementById('sync-text');
-            if (el) {
-                el.textContent = msg;
-            } else if (syncProgressEl) {
-                syncProgressEl.textContent = msg;
-            }
-        });
-        refreshDbStatus();
-        alert("Synchro réussie !");
-    } catch (err) {
-        alert("Erreur synchro");
-    } finally {
-        syncProgressEl.classList.add('hidden');
-    }
-});
-
 // Lancer l'initialisation au démarrage
+
 initAnalysisDates();
