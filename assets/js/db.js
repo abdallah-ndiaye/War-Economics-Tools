@@ -33,16 +33,18 @@ export async function saveTransactions(transactions) {
     const tx = db.transaction("transactions", "readwrite");
     const store = tx.objectStore("transactions");
     
-    // Normaliser les champs numériques pour éviter des concaténations de chaînes
+    // Normaliser les champs numériques et la date pour éviter des concaténations/erreurs
     transactions.forEach(orig => {
         const t = Object.assign({}, orig);
         if (t.money !== undefined) t.money = Number(t.money) || 0;
         if (t.quantity !== undefined) t.quantity = Number(t.quantity) || 0;
+        if (t.createdAt !== undefined) t.createdAt = new Date(t.createdAt).toISOString();
         store.put(t); // put ajoute ou met à jour si l'ID existe
     });
     
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error || new Error('Erreur lors du write en IndexedDB'));
     });
 }
 
