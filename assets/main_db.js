@@ -48,8 +48,9 @@ export function processAnalysisData(transactions, myUserId) {
     transactions.forEach(t => {
         const isBuyer = t.buyerId === myUserId;
         const isSeller = t.sellerId === myUserId;
-        const money = t.money || 0;
-        const qty = t.quantity || 0;
+        // Coercition explicite en Number pour éviter la concaténation de chaînes
+        const money = Number(t.money) || 0;
+        const qty = Number(t.quantity) || 0;
 
         // Mise à jour du bilan global
         if (isBuyer) analysis.global.totalBuy += money;
