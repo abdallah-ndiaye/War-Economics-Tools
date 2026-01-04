@@ -744,8 +744,9 @@ async function handleAnalyzeTrading() {
             if (!itemAggregates[code]) {
                 itemAggregates[code] = { itemCode: code, volume: 0, totalMoney: 0, transactionCount: 0 };
             }
-            itemAggregates[code].volume += (tx.quantity || 0);
-            itemAggregates[code].totalMoney += (tx.money || 0);
+            // Coercition explicite pour éviter concaténation si API renvoie des chaînes
+            itemAggregates[code].volume += Number(tx.quantity) || 0;
+            itemAggregates[code].totalMoney += Number(tx.money) || 0;
             itemAggregates[code].transactionCount += 1;
         });
 
@@ -922,6 +923,6 @@ btnRunAnalysis.addEventListener('click', () => {
     // Ici on appellera la future fonction de calcul de profits
 });
 
-// Lancer l'initialisation au démarrage
 
+// Lancer l'initialisation au démarrage
 initAnalysisDates();
