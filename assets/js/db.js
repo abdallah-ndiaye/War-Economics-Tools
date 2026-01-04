@@ -33,7 +33,13 @@ export async function saveTransactions(transactions) {
     const tx = db.transaction("transactions", "readwrite");
     const store = tx.objectStore("transactions");
     
-    transactions.forEach(t => store.put(t)); // put ajoute ou met à jour si l'ID existe
+    // Normaliser les champs numériques pour éviter des concaténations de chaînes
+    transactions.forEach(orig => {
+        const t = Object.assign({}, orig);
+        if (t.money !== undefined) t.money = Number(t.money) || 0;
+        if (t.quantity !== undefined) t.quantity = Number(t.quantity) || 0;
+        store.put(t); // put ajoute ou met à jour si l'ID existe
+    });
     
     return new Promise((resolve) => {
         tx.oncomplete = () => resolve();
